@@ -8,7 +8,13 @@
 import SwiftUI
 
 struct AddTodoView: View {
+    
+    @Environment(\.dismiss) var dismiss
+    @Environment(ListViewModel.self) var listViewModel
     @State private var todoText: String = ""
+    
+    @State private var showAlert: Bool = false
+    @State private var alertTextMsg: String = ""
     
     var body: some View {
         ScrollView {
@@ -20,7 +26,7 @@ struct AddTodoView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 Button {
-                    // Add your action here
+                    saveTodo(title: todoText)
                 } label: {
                     Text("Save")
                         .foregroundStyle(.white)
@@ -31,8 +37,34 @@ struct AddTodoView: View {
                 }
 
             }
-            .navigationTitle("Add todo 📝")
             .padding()
+        }
+        .navigationTitle("Add todo 📝")
+        .alert(alertTextMsg, isPresented: $showAlert) {
+            alertView()
+        }
+    }
+    
+    func saveTodo(title: String) {
+        if textIsValid() {
+            listViewModel.addTodo(title: title)
+            dismiss()
+        }
+    }
+    
+    func textIsValid() -> Bool {
+        if todoText.count > 2 {
+            return true
+        }
+        
+        showAlert.toggle()
+        alertTextMsg = "Todo item should contain atleast 3 characters 😟"
+        return false
+    }
+    
+    func alertView() -> some View {
+        Button("OK") {
+            showAlert.toggle()
         }
     }
 }
@@ -41,4 +73,5 @@ struct AddTodoView: View {
     NavigationStack {
         AddTodoView()
     }
+    .environment(ListViewModel())
 }
