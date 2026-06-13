@@ -10,7 +10,11 @@ import SwiftUI
 
 @Observable class ListViewModel {
     
-    var todoItems: [ItemModel] = []
+    var todoItems: [ItemModel] = [] {
+        didSet {
+            saveToUserDefaults()
+        }
+    }
     private let userDefaultsKey = "items_list"
     
     init(){
